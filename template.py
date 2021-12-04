@@ -18,7 +18,7 @@ DEBUG = True
 def solve(data):
     count = 0
 
-    for row in data
+    for row in data:
         pass
         
 
