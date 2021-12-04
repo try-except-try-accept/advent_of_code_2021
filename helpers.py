@@ -35,7 +35,9 @@ class PuzzleHelper:
 
     def pre_process(self, data, rotate=False, cast_int=True):
 
-        data = data.split(self.file_delim)
+
+        if rotate:  print("Rotating data")
+        data = [d for d in data.split(self.file_delim) if d.strip()]
         
         if rotate:
             cols = len(data[0])
@@ -43,7 +45,7 @@ class PuzzleHelper:
             
             for row in data:
                 for i in range(cols):
-                    new[i] += data[i]
+                    new[i] += row[i]
 
             data = new
 
