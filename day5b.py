@@ -44,64 +44,10 @@ def calculate_orientation(point1, point2, point3):
     else:
         return 2
 
-##    input()
-##    
-##    last_point = point1
-##
-##    path = ""
-##    last_point = point1
-##
-##    #print("lets compare", point1, point2, point3)
-##    for point in [point2, point3]:
-##        direction = ""
-##        
-##        if point[0] > last_point[0]:
-##            direction = "R"
-##        elif point[0] < last_point[0]:
-##            direction = "L"
-##
-##        if not path or path[-1] != direction:
-##            path += direction
-##            
-##        if point[1] < last_point[1]:
-##            direction = "U"
-##        elif point[1] > last_point[1]:
-##            direction = "D"
-##
-##        if not path or path[-1] != direction:
-##            path += direction
-##        
-##
-##        last_point = point
-##
-##    colinear, anti_clockwise, clockwise = False, False, False
-##
-##    if ("U" not in path and "D" not in path) or ("R" not in path and "L" not in path):
-##        colinear = True
-##        #p.bugprint("colinear")
-##    elif any(d in path for d in ("DR", "RU", "UL", "LD")):
-##        anti_clockwise = True
-##        #p.bugprint("Anti")
-##    elif any(d in path for d in ("UR", "RD", "LU", "DL")):
-##        clockwise = True
-##        #p.bugprint("clockwise")
-##
-##    print(path)
-##
-##
-##    p.bugprint(path)
-##    if not(colinear ^ anti_clockwise ^ clockwise): # cool XOR.    
-##        raise Exception("Duplicate orientation error oh no")
-##    else:
-##        if colinear:    return 0
-##        elif anti_clockwise:    return 1        
-##        elif clockwise:   return 2
-##        else:   raise Exception("No orientation error oh no")
-        
-   
-    
 
 def solve2(data):
+
+    ## failed attempt to do it in a mathy way
 
     lines = set()
     for row_num, row in enumerate(data):
@@ -164,9 +110,39 @@ def solve2(data):
             # otherwise check if all colinear
             elif all(orientation == 0 for orientation in orientations):
 
-                if abs(p1[0] - p2[0]) > 0 or abs(q1[0] - q2[0]) > 0:
-                    intersections += 1
-                    p.bugprint("Found intersection")
+                x_colinear = q1[0] == q2[0] == p1[0] == p2[0]
+                y_colinear = q1[1] == q2[1] == p1[1] == p2[1]
+
+                overlaps = 0
+             
+                for check, axis in zip([x_colinear, y_colinear], [1, 0]):
+                    if check:
+
+                        if p1[axis] < p2[axis]:
+                            if q1[axis] > q2[axis]:
+                                overlaps = abs(q1[axis] - q2[axis])
+                        else:
+                            if q1[axis] < q2[axis]:
+                                overlaps = abs(q1[axis] - q2[axis])
+                        if q1[axis] < q2[axis]:
+                            if p1[axis] > p2[axis]:
+                                overlaps = abs(p1[axis] - p2[axis])
+                        else:
+                            if p1[axis] < p2[axis]:
+                                overlaps = abs(p1[axis] - p2[axis])
+
+                    
+     
+
+                if overlaps:
+                    print("Found colinear interseection x", overlaps, "between", p1, q1, p2, q2)
+
+
+                intersections += overlaps
+ 
+                    
+
+
 
 
     return intersections
@@ -205,13 +181,13 @@ def solve(data):
 
     pts = []
 
-    p.bugprint(len(data), "to go")
+    print(len(data), "to go")
 
 
     
 
     for row_num, row in enumerate(data):
-        p.bugprint(row_num)
+        print(row_num)
 
         x1, x2, y1, y2 = prep_data(row)
 ##        if x1 != x2 and y1 != y2:
@@ -262,10 +238,10 @@ def solve(data):
 if __name__ == "__main__":
     p = PuzzleHelper(DAY, TEST_DELIM, FILE_DELIM, DEBUG, PP_ARGS)
 
-    if p.check(TESTS, solve):
+    if p.check(TESTS, solve2):
         puzzle_input = p.load_puzzle()
         puzzle_input = p.pre_process(puzzle_input, *PP_ARGS)
-        print("FINAL ANSWER: ", solve(puzzle_input))
+        print("FINAL ANSWER: ", solve2(puzzle_input))
 
 
 
