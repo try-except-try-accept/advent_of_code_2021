@@ -103,6 +103,8 @@ def calculate_orientation(point1, point2, point3):
 
 def solve2(data):
 
+    ## failed attempt to do it in a mathy way
+
     lines = set()
     for row_num, row in enumerate(data):
         p.bugprint(row_num)
@@ -205,13 +207,13 @@ def solve(data):
 
     pts = []
 
-    p.bugprint(len(data), "to go")
+    print(len(data), "to go")
 
 
     
 
     for row_num, row in enumerate(data):
-        p.bugprint(row_num)
+        print(row_num)
 
         x1, x2, y1, y2 = prep_data(row)
 ##        if x1 != x2 and y1 != y2:
