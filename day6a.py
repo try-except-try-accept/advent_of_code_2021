@@ -15,59 +15,132 @@ LAST_DAY = 80
 
 baby_count = 0
 
-def create_babies(days, count=0, depth=0, babies=0):
-    global baby_count
+def solve2(data):
+    count = 0
 
-    babies = days // 9
-
-    more_baby_days = list(range(LAST_DAY-days, LAST_DAY+1, 9))
-
-    
-        
-    #print("\t"*depth, f"and that fish had {babies+1} more babies on days", more_baby_days)
-    days -= 9
-
-    for i in range(babies):
-        baby_count += len(more_baby_days)
-        count = create_babies(days, depth+1, babies)
-
-    
-    
-    return count
-    
-
-
-def solve(data):
-
-    
 
     fish = list(map(int, data[0].split(",")))
 
+    day = 0
+
+    while day < LAST_DAY+1:
+        print(day)
+        i = 0
+        new_fish = 0
+        #print(f"After {day} day: {fish}")
+        if day == LAST_DAY:
+            return len(fish)
+
+        print(list(bin(f)[2:].zfill(4) for f in fish))
+
+        while i < len(fish):
+            f = fish[i]
+
+            new = f - 1
+
+            if new == -1:
+                new_fish += 1
+                new = 6
+
+            fish[i] = new
+            i += 1
+
+        for j in range(new_fish):
+            fish.append(8)
+
+
+
+        day += 1
+
+def solve(data):
+
+
+    fish = list(map(int, data[0].split(",")))
+
+
+    mask_map = {}
+    mask = 0b00000000000000000111
+
+    mask_order = [None] * 5
+
+    i = 4
+
+    for f in reversed(fish):
+
     
 
-    fish_count = 5
+        mask_order[i] = mask
+        print(mask_order)
+        input()
 
-    last_day = int(LAST_DAY)
-    
-    for days_left in range(last_day-1, -1, -1):
 
-        print(f"After {last_day-days_left} days. {days_left} days left")
-        for i in range(len(fish)):
+        mask = mask << 4
+        i -= 1
+
+    print(mask_map)
+
+
+    print(list(bin(m) for m in mask_order))
+
+    input()
+
+    day = 0
+
+
+    mask_counter = 0
+
+    fish_nums = int("".join([bin(f)[2:].zfill(4) for f in fish]), 2)
+
+    fishes = 5
+    while day < LAST_DAY:
+
         
-            fish[i] -= 1
 
-            if fish[i] == -1:
-                #print(f"Fish {i} had a baby!")
-                
-                fish_count += 1
-                fish[i] = 6
-                fish_count += create_babies(days_left)
+        
+
+
+        fish_display = bin(fish_nums)[2:].zfill(fishes*4)
+
+        print("Fish display", fish_display, end=":")
+        for i in range(0, len(fish_display), 4):
+            print(int(fish_display[i:i+4], 2), end= ",")
+        print()
+
+        mask = mask_order[mask_counter]
+        fish_nums = fish_nums | mask
+
+        fish_sub = "0001" * (len(fish_display) // 4)
+        print(fish_display)
+        print("subtract")
+        print(bin(mask)[2:].zfill(fishes*4))
+        print("equals")
+        print(fish_sub)
+        fish_nums -= int(fish_sub, 2)
+
+        mask_counter = (mask_counter + 1) % len(mask_order)
+
+        input()
+
+        day += 1
+
+        
+
+
+        
+    
+
+        
+
+    
+    
+
+    
 
                 
                 
                 
 
-    print("baby count", baby_count) 
+    print("baby count", fish_count) 
 
     return baby_count
 
@@ -78,6 +151,7 @@ if __name__ == "__main__":
     p = PuzzleHelper(DAY, TEST_DELIM, FILE_DELIM, DEBUG, PP_ARGS)
 
     if p.check(TESTS, solve):
+        input()
         
         puzzle_input = p.load_puzzle()
         puzzle_input = p.pre_process(puzzle_input, *PP_ARGS)
