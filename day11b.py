@@ -16,9 +16,9 @@ TESTS = """5483143223
 2176841721
 6882881134
 4846848554
-5283751526///1656"""
+5283751526///195"""
 
-
+flash_grid = [[-1 for i in range(10)] for j in range(10)]
 
 
 DEBUG = True
@@ -48,10 +48,13 @@ def get_neighbours(data, x, y, w, h):
 
 def flash(data, x, y, w, h, flashed=None):
     global flashes
+    global flash_grid
 
     #print(f"x {x} y {y} flashed!")
 
     data[y][x] = 0
+
+    flash_grid[y][x] = 0
     
     if flashed is None:
         flashed = set((y,x))
@@ -105,6 +108,7 @@ def check_flashes(data, w, h, flashed=None):
 
 
 def solve(data):
+    global flash_grid
     count = 0
     print(data)
 
@@ -114,11 +118,21 @@ def solve(data):
     data = [[int(d) for d in row] for row in data]
 
 
-    for day in range(0, 100):
+    day = 0
+    while True:
+        flash_grid = [[-1 for i in range(10)] for j in range(10)]
         new_day = data
         
         new_day, flashed = increase_energy(new_day,w, h)
         new_day, flashed = check_flashes(new_day, w, h, flashed)
+
+        day += 1
+
+        if sum([sum(row) for row in flash_grid]) == 0:
+            return day
+        
+
+    
 
   
     return flashes
