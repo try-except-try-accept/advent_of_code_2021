@@ -3,9 +3,7 @@ from collections import Counter
 from helpers import PuzzleHelper
 
 PP_ARGS = False, False #rotate, cast int
-DAY = 3
-TEST_DELIM = "---"
-FILE_DELIM = "\n"
+
 DAY = 1
 TEST_DELIM = "---"
 FILE_DELIM = "\n"
