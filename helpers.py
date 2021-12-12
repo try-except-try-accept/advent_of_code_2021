@@ -75,8 +75,9 @@ class PuzzleHelper:
                 print("Test passed")
             else:
                 print("Test failed")
-                success = False
+                success = False                
                 print(outcome)
+                raise Exception("failed the test data")
 
         return success
 
