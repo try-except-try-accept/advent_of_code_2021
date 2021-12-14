@@ -68,7 +68,7 @@ def solve(data):
                 perc = c[1]/len(poly)*100
                 last_perc = lc[1]/len(last_poly)*100
             
-                print(f"{c[0]}: {perc:.2f}% ({perc-last_perc:.2f}%)", end=" | ")
+                print(f"{c[0]}: {perc}% ({perc-last_perc}%)", end=" | ")
             
 
         except NameError as e:

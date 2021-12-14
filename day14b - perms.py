@@ -37,26 +37,65 @@ from itertools import product
 def solve(data):
     poly = data[0]
 
-##    length = len(poly)
-##
-##    for day in range(40):
-##        length *= 2
-##        length -= 1
-##    print("final")
-##    print(length)
-##    return 2188189693529
-    
     react = {}
     
     for reaction in data[1:]:
         pair, insert = reaction.split(" -> ")
-        react[pair] = pair[0]+insert+pair[1]
+        react[pair] = insert
 
-    print("".join(data))
+    #print("".join(data))
 
-    poss_chains = ["".join(pair) for pair in product(set(findall("[A-Z]", "".join(data))), repeat=2)]
+    all_elems = set(findall("[A-Z]", "".join(data)))
 
-    print(poss_chains)
+    perms = ["".join(pair) for pair in product(all_elems, repeat=2)]
+
+
+    mutations = {p:{e:0 for e in all_elems} for p in perms}
+    #print(mutations)
+    gens = {0:dict(mutations)}
+
+   
+
+    
+    
+
+    for step in range(40):
+        for j in range(len(poly)-1):
+            p = poly[j:j+2]
+
+            gens[step][p][react[p]] += 1
+    
+
+        
+
+        for pair, reaction in react.items():
+
+            gens[step][pair][reaction] += 1
+
+            new_pair = pair[0] + reaction
+
+            gens[step][pair][react[new_pair]] += 1
+            
+
+            new_pair = reaction + pair[1]
+
+            gens[step][pair][react[new_pair]] += 1
+            
+
+            
+
+            
+            
+
+        gens.update({step+1:dict(gens[step])})
+
+
+        print("After gen", step+1)
+        print(gens[step])
+        input()
+        
+        
+    
 
     
 
