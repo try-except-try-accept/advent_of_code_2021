@@ -9,6 +9,10 @@ TEST_DELIM = "---"
 FILE_DELIM = "\n"
 TESTS = """D2FE28///6
 ---
+38006F45291200///8
+---
+EE00D40C823060///7
+---
 8A004A801A8002F478///16
 ---
 620080001611562C8802118E34///12
@@ -16,10 +20,7 @@ TESTS = """D2FE28///6
 C0015000016115A2E0802F182340///23
 ---
 A0016C880162017C3686B18A3D4780///31
----
-EE00D40C823060///7
----
-38006F45291200///8
+
 ---"""
 
 DEBUG = True
@@ -51,16 +52,26 @@ def process_literal(bits, version, tot):
 
 def process_operator(bits, version, tot):
 
+    print("Bits is", bits)
+
     
     length_type_id = int(bits[0], 2)
     print(f"length_type_id is {length_type_id}")
 
     if length_type_id == 0:
         length = int(bits[1:16], 2)
+        print("length is", length)
+        index = 16
+        sub_packet = bits[index:index+11]
+        tot += process_bits(sub_packet)
+        sub_packet = bits[index+11:]
+        tot += process_bits(sub_packet)
+        
         
 
     else:
         number_of_sub_packets = int(bits[1:12], 2)
+        print(f"Number of sub packets is {number_of_sub_packets}", bits[1:12])
 
         index = 12
         for j in range(number_of_sub_packets):
