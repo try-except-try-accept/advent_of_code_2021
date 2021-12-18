@@ -28,7 +28,23 @@ def check_depth(pair):
     except:
         return False
         
+def get_first_reg_left(sequence, i):
 
+    while i >= 0:
+        if type(sequence[i]) == int:
+            return sequence[i]
+        i -= 1
+    return 0
+
+def get_first_reg_right(sequence, i):
+
+    while i < len(sequence):
+        if type(sequence[i]) == int:
+            return sequence[i]
+        i += 1
+    return 0
+
+    
 
 def solve(data):
 
@@ -54,6 +70,9 @@ def solve(data):
 
 
 if __name__ == "__main__":
+    seq = [[5,6], 5, 2, [7,9], 8]
+    print(get_first_reg(seq, 3))
+    
     p = PuzzleHelper(DAY, TEST_DELIM, FILE_DELIM, DEBUG, PP_ARGS)
 
     if p.check(TESTS, solve):
