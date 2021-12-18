@@ -63,8 +63,37 @@ def split(thing):
     return [thing//2, ceil(thing/2)]
 
 def reduce(sequence):
+    stacks = []
+    stack_pointer = -1
+    for item in sequence:
+
+        if item == "[":
+
+            stacks.append([])
+            stack_pointer += 1
+
+        elif item == "]":
+
+            stack_pointer -= 1
+
+        elif item.isdigit():
+
+            stacks[stack_pointer].append(int(item))
 
 
+        check_stack = stacks[stack_pointer]
+        print("check stack is", check_stack)
+
+        if stack_pointer == 3 and len(check_stack) >= 2:
+            right = check_stack.pop(-1)
+            left = check_stack.pop(-1)
+            print(f"need to explode {left}, {right}")
+
+        print(stacks)
+        
+            
+
+        
     ## check explode
 
     ## if explode:
@@ -85,12 +114,15 @@ def reduce(sequence):
 
     pass
 
-def add(*lines):
+def add(lines):
 
     left, right = lines
     
-    left = left[:-1] + "," + right + "]"
-    return left
+    final = left[:-1] + "," + right + "]"
+
+    print("added.", final)
+    
+    return final
 
 def solve(data):
 
@@ -101,18 +133,18 @@ def solve(data):
     #always consist of two regular numbers. Then, the entire exploding
     #pair is replaced with the regular number 0.for row in data:
 
-    to_add = []
-    while len(data) > 1:
+    add_q = []
+    while len(data) > 0:
 
-        to_add.append(data.pop(0))
+        add_q.append(data.pop(0))
 
-        if len(to_add) == 2:
+        if len(add_q) == 2:
 
-            new_line = add(add_lines)
+            new_line = add(add_q)
 
             new_line = reduce(new_line)
 
-            to_add = []
+            add_q = []
     
 
     
@@ -124,11 +156,11 @@ def solve(data):
 
 
 if __name__ == "__main__":
-    print(add("[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"))
+    data = ["[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"]
     
-    seq = "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]"
-    print("Parsing", seq)
-    parse(seq)
+    
+    
+    solve(data)
     
     
     p = PuzzleHelper(DAY, TEST_DELIM, FILE_DELIM, DEBUG, PP_ARGS)
