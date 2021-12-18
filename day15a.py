@@ -130,27 +130,18 @@ def use_a_star(origin, destination, graph):
         p.bugprint("My g cost is", g_cost)
     
         path_data[node][2] = g_cost + node.h_cost
-
-
-
         return path_data
 
-
     ## each vertex stores:
-
+    ##        0        |    1   |      2    |      3
     ## distance from A | h cost | f = g + h | prev vertex
 
     path_data = {n:[None, n.h_cost, None, None]  for n in graph.values()}
 
-    
-
-    
     closed_vertices = []
-
 
     current_node = None
 
-    
 
     while destination not in closed_vertices:
 
@@ -161,7 +152,7 @@ def use_a_star(origin, destination, graph):
 
         else:
 
-            ## select new current node
+            ## select new current node - open vertex with lowest f cost
             lowest = inf
             select_node = None
             
@@ -173,24 +164,20 @@ def use_a_star(origin, destination, graph):
                     select_node = n
 
             current_node = select_node
+            
+            # inspect current state of path data table
             for v, row in path_data.items():
                 p.bugprint(v, row)
 
-
-
-
-        
-
-
         path_data = calculate_costs(current_node, path_data)
 
-
-        
         for n in current_node.neighbours:
             if n not in closed_vertices and n not in open_vertices:
+                # open this vertex
                 open_vertices.append(n)
                 # set previous vertex
                 path_data[n][3] = current_node
+                # update f cost and g cost
                 path_data = calculate_costs(n, path_data)
 
         open_vertices.remove(current_node)
@@ -208,6 +195,7 @@ def use_a_star(origin, destination, graph):
     
 
 def use_dijkstras(origin, destination, graph, unvisited):
+    """Abandoned approach - dijkstra's algorithm was way too slow"""
 
 
     ## each vertex stores:
