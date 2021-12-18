@@ -44,7 +44,24 @@ def get_first_reg_right(sequence, i):
         i += 1
     return 0
 
-    
+def explode(sequence, i):
+
+    pair = sequence[i]
+    left = get_first_reg_left(sequence, i)
+    right = get_first_reg_right(sequence, i)
+    sequence[i] = pair[0] + left, pair[1] + right
+
+
+    print("new sequence is", sequence)
+
+def parse(sequence, d=0):
+
+    for thing in sequence:
+
+        if type(thing) != int:
+            parse(thing, d+1)
+        else:
+            print(d*"\t","Found", thing)
 
 def solve(data):
 
@@ -70,8 +87,11 @@ def solve(data):
 
 
 if __name__ == "__main__":
-    seq = [[5,6], 5, 2, [7,9], 8]
-    print(get_first_reg(seq, 3))
+    
+    
+    seq = [[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]    
+    parse(seq)
+    
     
     p = PuzzleHelper(DAY, TEST_DELIM, FILE_DELIM, DEBUG, PP_ARGS)
 
