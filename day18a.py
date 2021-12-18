@@ -54,14 +54,33 @@ def explode(sequence, i):
 
     print("new sequence is", sequence)
 
-def parse(sequence, d=0):
+def parse(sequence, d=0, last_int=None):
 
-    for thing in sequence:
+    if d == 4:
+        print("need to explode", sequence)
+        return sequence, last_int
+
+    
+    explode = None
+    for i, thing in enumerate(sequence):
 
         if type(thing) != int:
-            parse(thing, d+1)
+            explode, last_int = parse(thing, d+1, last_int)
+
+            if explode:
+                if not last_int:
+                    print("no last int")
+                else:
+                    print("last int", last_int)
+                
         else:
+            last_int = thing
             print(d*"\t","Found", thing)
+
+            if explode:
+                print("next int", last_int)
+
+    return None, last_int
 
 def solve(data):
 
@@ -89,7 +108,8 @@ def solve(data):
 if __name__ == "__main__":
     
     
-    seq = [[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]    
+    seq = [[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]
+    print("Parsing", seq)
     parse(seq)
     
     
