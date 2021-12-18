@@ -1,4 +1,4 @@
-from re import search, match, findall
+from re import search, match, findall, sub
 from collections import Counter
 from helpers import PuzzleHelper
 from math import ceil
@@ -63,6 +63,56 @@ def split(thing):
     number divided by two and rounded up'''
     return [thing//2, ceil(thing/2)]
 
+
+def explode(sequence):
+
+    '''
+    [[[3, [4, 2]], 3]  -> [[7, 0], 5]
+    [[3, [[4, 2], 3]]] -> [7, [0, 5]]
+    [3, [4, 2]] -> [7, 0]
+    [[3, 4], 2] -> [0, 6]
+    '''
+    digs = []
+    sequence = sequence.replace(" ", "")
+
+    print("Got ", sequence)
+    for c in sequence:
+        if c.isdigit():
+
+            digs.append(int(c))
+
+    sequence = sub("\[\d\,\d\]", "0", sequence)
+
+    if len(digs) == 4:
+        
+        print(sequence)
+        sequence = sub("\d", str(sum(digs[:2])), sequence, count=1)
+        print(sequence)
+        sequence = sub("\,[1-9]",  ","+str(sum(digs[-2:])), sequence, count=1)
+        print(sequence)
+
+    else:
+
+        
+
+        if sequence[1] == "0":
+            sequence = sub("[1-9]{1}", str(sum(digs[-2:])), sequence, count=1)
+        else:
+            sequence = sub("[1-9]{1}", str(sum(digs[:2])), sequence, count=1)
+            
+        
+    print("Converted ", sequence)
+    return sequence
+        
+
+        
+
+    
+
+            
+
+
+
 def reduce(sequence, master=None, depth=1, prev_int=None):
     print(depth, "Reducing", sequence)
 
@@ -76,12 +126,9 @@ def reduce(sequence, master=None, depth=1, prev_int=None):
             if depth == 3:
                 print("Explode", thing)
 
-                
-
+                j = i
                 if prev_int:
-
                     sequence = [prev_int, sequence]
-                    i = 1
 
                 print("Before", sequence)
 
@@ -90,21 +137,16 @@ def reduce(sequence, master=None, depth=1, prev_int=None):
                 if i > 0:
                     if type(sequence[i-1]) is int:
                         sequence[i-1] += thing[0]
-                        
-                if i < 0:
-                    if type(sequence[i+1]) is int:
-                        sequence[i+1] += thing[1]
+                
+                if type(sequence[j+1]) is int:
+                    sequence[j+1] += thing[1]
                     
                 sequence[i] = 0
                 print("Amended", sequence)
 
-
                 master = dumps(master)
-
                 orig = dumps(orig)
-
                 sequence = dumps(sequence)
-
                 master = master.replace(orig, sequence)
 
                 return reduce(loads(master))
@@ -197,7 +239,12 @@ def solve(data):
 if __name__ == "__main__":
     data = ["[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"]
     
-    
+    for row in     '''[[[3, [4, 2]], 3]
+    [[3, [[4, 2], 3]]]
+    [3, [4, 2]]
+    [[3, 4], 2]
+    '''.split("\n"):
+        explode(row.strip())
     
     solve(data)
     
