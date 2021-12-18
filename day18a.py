@@ -62,44 +62,57 @@ def split(thing):
     number divided by two and rounded up'''
     return [thing//2, ceil(thing/2)]
 
-def parse(sequence):
+def reduce(sequence):
 
-    stacks = [[]]
 
-    for item in sequence:
+    ## check explode
 
-        if item == "[":
+    ## if explode:
 
-            stacks.append([])
+        ## explode
 
-        elif item == "]":
-            stacks.pop(-1)
+        ## parse
 
-        elif item.isdigit():
+    ## check split
 
-            stacks[-1].append(int(item))
+    ## if split
 
-        print(stacks)
+        ## split
 
-            
-            
+        ## parse
 
-        
+    ## exit
+
+    pass
+
+def add(*lines):
+
+    left, right = lines
     
+    left = left[:-1] + "," + right + "]"
+    return left
 
 def solve(data):
 
-
     #To explode a pair, the pair's left value is added to the first
-
     # regular number to the left of the exploding pair (if any), and
     #the pair's right value is added to the first regular number to
     #the right of the exploding pair (if any). Exploding pairs will
     #always consist of two regular numbers. Then, the entire exploding
     #pair is replaced with the regular number 0.for row in data:
 
+    to_add = []
+    while len(data) > 1:
 
-    pass
+        to_add.append(data.pop(0))
+
+        if len(to_add) == 2:
+
+            new_line = add(add_lines)
+
+            new_line = reduce(new_line)
+
+            to_add = []
     
 
     
@@ -111,7 +124,7 @@ def solve(data):
 
 
 if __name__ == "__main__":
-    
+    print(add("[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"))
     
     seq = "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]"
     print("Parsing", seq)
