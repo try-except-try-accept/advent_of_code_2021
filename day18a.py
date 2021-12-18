@@ -2,8 +2,8 @@ from re import search, match, findall
 from collections import Counter
 from helpers import PuzzleHelper
 from math import ceil
-from json import loads
-
+from json import loads, dumps
+from copy import deepcopy
 PP_ARGS = False, False #rotate, cast int
 
 DAY = 18
@@ -63,50 +63,70 @@ def split(thing):
     number divided by two and rounded up'''
     return [thing//2, ceil(thing/2)]
 
-def reduce(sequence, depth=0):
+def reduce(sequence, master=None, depth=1, prev_int=None):
+    print(depth, "Reducing", sequence)
 
-    print("Reducing", sequence, "depth", depth)
+    if master is None:
+        master = deepcopy(sequence)
 
-    if depth == 3:
+    for i, thing in enumerate(sequence):
 
-        left, right = sequence
-        print("Explode", sequence)
-        depth -= 1
-        return 0, left, right
-    
-    index = 0
-    while index < len(sequence):
-        thing = sequence[index]
+        if type(thing) is list:
 
-        if type(thing) == list:
-            sequence[index], left, right = reduce(thing, depth+1)
+            if depth == 3:
+                print("Explode", thing)
 
-            if left is not None:
-                print(f"left is {left}, right is {right}")
-                print("Sequence is", sequence)
-                print("Index is", index)
-                print("found int on right", sequence[index+1])
-
-                if index > 0:
-                    sequence[index-1] = left
-
-                sequence[index+1] += right
-                print("Sequence amended", sequence)
-            
-            
-            
-        else:
-
-            
-            
-            if thing >= 10:
-
-                print("Split", thing)
-                sequence[index] = split(thing)
-        index += 1
-
-    return sequence, None, None
                 
+
+                if prev_int:
+
+                    sequence = [prev_int, sequence]
+                    i = 1
+
+                print("Before", sequence)
+
+                orig = deepcopy(sequence)
+
+                if i > 0:
+                    if type(sequence[i-1]) is int:
+                        sequence[i-1] += thing[0]
+                        
+                if i < 0:
+                    if type(sequence[i+1]) is int:
+                        sequence[i+1] += thing[1]
+                    
+                sequence[i] = 0
+                print("Amended", sequence)
+
+
+                master = dumps(master)
+
+                orig = dumps(orig)
+
+                sequence = dumps(sequence)
+
+                master = master.replace(orig, sequence)
+
+                return reduce(loads(master))
+
+            else:
+                sequence = reduce(thing, master, depth+1, prev_int)
+
+            
+
+        else:
+            prev_int = thing
+            print("Found a prev int", prev_int)
+
+            if thing > 10:
+
+                sequence[i] = split(thing)
+                sequence = reduce(sequence, master, depth+1, prev_int)
+
+        
+
+    return sequence
+                    
             
         
     ## check explode
