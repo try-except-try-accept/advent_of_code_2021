@@ -73,35 +73,43 @@ def explode(sequence):
     [[3, 4], 2] -> [0, 6]
     '''
     digs = []
-    sequence = sequence.replace(" ", "")
-
-    print("Got ", sequence)
+    print(sequence)
+    
+    orig = sequence
+    
     for c in sequence:
         if c.isdigit():
 
             digs.append(int(c))
 
-    sequence = sub("\[\d\,\d\]", "0", sequence)
+    sequence = sub("\[\d\,\s\d\]", "0", sequence)
+
+    print(sequence)
 
     if len(digs) == 4:
         
-        print(sequence)
+    
         sequence = sub("\d", str(sum(digs[:2])), sequence, count=1)
-        print(sequence)
-        sequence = sub("\,[1-9]",  ","+str(sum(digs[-2:])), sequence, count=1)
-        print(sequence)
+    
+        sequence = sub("\,\s[1-9]",  ", "+str(sum(digs[-2:])), sequence, count=1)
+    
 
     else:
 
-        
+        one, two = sequence.split(", ")
 
-        if sequence[1] == "0":
-            sequence = sub("[1-9]{1}", str(sum(digs[-2:])), sequence, count=1)
+        
+        
+        
+        if orig[1] != "[":
+            one = sub("\d", str(sum(digs[:2])), one, count=1)
         else:
-            sequence = sub("[1-9]{1}", str(sum(digs[:2])), sequence, count=1)
+            two = sub("\d", str(sum(digs[-2:])), two, count=1)
+
+        sequence = ", ".join([one, two])
             
         
-    print("Converted ", sequence)
+    
     return sequence
         
 
@@ -132,24 +140,24 @@ def reduce(sequence, master=None, depth=1, prev_int=None):
 
                 print("Before", sequence)
 
-                orig = deepcopy(sequence)
+                orig = dumps(sequence)
+                sequence = dumps(sequence)
 
-                if i > 0:
-                    if type(sequence[i-1]) is int:
-                        sequence[i-1] += thing[0]
                 
-                if type(sequence[j+1]) is int:
-                    sequence[j+1] += thing[1]
-                    
-                sequence[i] = 0
+
+                sequence = explode(sequence)
+
+                
+
                 print("Amended", sequence)
 
-                master = dumps(master)
-                orig = dumps(orig)
-                sequence = dumps(sequence)
-                master = master.replace(orig, sequence)
+                master_dump = dumps(master)              
+                
+                master_dump = master_dump.replace(orig, sequence)
 
-                return reduce(loads(master))
+                print("New master", master_dump)
+
+                return reduce(loads(master_dump))
 
             else:
                 sequence = reduce(thing, master, depth+1, prev_int)
@@ -161,9 +169,16 @@ def reduce(sequence, master=None, depth=1, prev_int=None):
             print("Found a prev int", prev_int)
 
             if thing > 10:
-
+                print("Split", thing)
+                
+                orig = dumps(sequence)
                 sequence[i] = split(thing)
-                sequence = reduce(sequence, master, depth+1, prev_int)
+
+                print("After split", sequence)
+                input()
+                master_dump = dumps(master)              
+                master_dump = master_dump.replace(orig, dumps(sequence))
+                sequence = reduce(loads(master_dump))
 
         
 
@@ -238,13 +253,7 @@ def solve(data):
 
 if __name__ == "__main__":
     data = ["[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"]
-    
-    for row in     '''[[[3, [4, 2]], 3]
-    [[3, [[4, 2], 3]]]
-    [3, [4, 2]]
-    [[3, 4], 2]
-    '''.split("\n"):
-        explode(row.strip())
+    print(explode("[0, [6, 7]]"))
     
     solve(data)
     
