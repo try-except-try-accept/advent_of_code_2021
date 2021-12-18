@@ -9,15 +9,15 @@ TEST_DELIM = "---"
 FILE_DELIM = "\n"
 TESTS = """D2FE28///6
 ---
-38006F45291200///8
+38006F45291200///9
 ---
-EE00D40C823060///7
+EE00D40C823060///14
 ---
 8A004A801A8002F478///16
 ---
-620080001611562C8802118E34///12
----
 C0015000016115A2E0802F182340///23
+---
+620080001611562C8802118E34///12
 ---
 A0016C880162017C3686B18A3D4780///31
 
@@ -32,55 +32,74 @@ DEBUG = True
 
 
 def process_literal(bits, version, tot):
-    print("LITERAL")
+    print("LITERAL", bits)
 
-    index = 0
-    first_bit = bits[index]
+    
+    
+    try:
+        number = ""
+        chunk_num = 0
+        while True:
+            print("chunking", bits)
+            chunk = "".join(bits.pop(0) for i in range(5))
+            number += chunk[1:]
+            if chunk[0] == "0":
+                break
+            chunk_num += 1
+        print(f"{number} literal was {int(number, 2)}")
 
-    number = ""
-    while True:
-        chunk = bits[index:index+5]
-        number += chunk[1:]
-        if chunk[0] == "0":
-            break
+    except:
+        pass
 
-        index += 5
+    
+    return tot, bits
 
-    tot += int(number, 2)
 
-    return version
 
 def process_operator(bits, version, tot):
 
-    print("Bits is", bits)
+    print(bits)
+    final_bits = None
+    length_type_id = int(bits.pop(0), 2)
+    print(f"{length_type_id} length_type_id is {length_type_id}")
 
-    
-    length_type_id = int(bits[0], 2)
-    print(f"length_type_id is {length_type_id}")
 
     if length_type_id == 0:
-        length = int(bits[1:16], 2)
+        length = int("".join(bits.pop(0) for i in range(15)), 2)
         print("length is", length)
-        index = 16
-        sub_packet = bits[index:index+11]
-        tot += process_bits(sub_packet)
-        sub_packet = bits[index+11:]
-        tot += process_bits(sub_packet)
+        bits = bits[:length]
         
+        print(f"sub_packet is now {''.join(bits)}")
+        tot, bits = process_bits(bits, tot)
         
-
     else:
-        number_of_sub_packets = int(bits[1:12], 2)
-        print(f"Number of sub packets is {number_of_sub_packets}", bits[1:12])
-
-        index = 12
-        for j in range(number_of_sub_packets):
-            sub_packet = bits[index:index+11]
-            print("Found a sub packet", sub_packet)
-            tot += process_bits(sub_packet)
-            index += 11
+        number_of_sub_packets = "".join(bits.pop(0) for i in range(11))
         
-    return tot
+        print(f"{number_of_sub_packets} num of sub packets is {int(number_of_sub_packets, 2)}", )
+        number_of_sub_packets = int(number_of_sub_packets, 2)
+
+        bits_left = len("".join(bits).rstrip("0"))
+
+        bits_left = len(bits)
+        
+        packet_length = bits_left//number_of_sub_packets
+        
+        print(f"Packet length is {packet_length}")
+        for j in range(number_of_sub_packets):
+            
+            sub_packet = [bits.pop(0) for i in range(packet_length)]
+            print(f"sub_packet is now {(sub_packet)}")
+            
+            if not sub_packet:
+                break
+            tot, final_bits = process_bits(sub_packet, tot)
+
+        if final_bits:
+            bits = final_bits
+
+    print("Exit")
+        
+    return tot, bits
 
     
 
@@ -88,21 +107,33 @@ def process_operator(bits, version, tot):
 
 
 def process_bits(bits, tot=0):
-    tot = 0
-    version = int(bits[:3], 2)
-    type_ = int(bits[3:6], 2)
+    print("".join(bits))
 
-    print(f"Version is {version} type is {type_}")
+    print(len(bits))
+    
 
-    payload = bits[6:]
+    while bits:
+        print(f"bits left {bits} {len(bits)} tot is {tot}")
+        version = "".join(bits.pop(0) for i in range(3))
+        
+        type_ = "".join(bits.pop(0) for i in range(3))
 
-    if type_ == 4:
-        tot += process_literal(payload, version, tot)
+        print(f"{version} version is {int(version, 2)}")
+        print(f"{type_} type is {int(type_, 2)}")
 
-    else:
-        tot += process_operator(payload, version, tot)
+        version, type_ = int(version, 2), int(type_, 2)
 
-    return tot                      
+        tot += version
+        
+        payload = bits
+
+        if type_ == 4:
+            tot, bits = process_literal(payload, version, tot)
+
+        else:
+            tot, bits = process_operator(payload, version, tot)
+
+    return tot, bits                  
 
     
         
@@ -114,10 +145,13 @@ def solve(data):
     count = 0
     tot = 0
 
-    bits = "".join([bin(int(digit, 16))[2:].zfill(4) for digit in data[0]])
-    print(bits)
+    bits = list("".join([bin(int(digit, 16))[2:].zfill(4) for digit in data[0]]).rstrip("0"))
 
-    return process_bits(bits)
+    result = process_bits(bits)[0]
+
+    print(f"result is {result}")
+
+    return result
 
 
 
