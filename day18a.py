@@ -62,36 +62,30 @@ def split(thing):
     number divided by two and rounded up'''
     return [thing//2, ceil(thing/2)]
 
-def parse(sequence, d=0, last_int=None):
+def parse(sequence):
 
-    if d == 4:
-        print("need to explode", sequence)
-        return sequence, last_int
+    stacks = [[]]
 
+    for item in sequence:
+
+        if item == "[":
+
+            stacks.append([])
+
+        elif item == "]":
+            stacks.pop(-1)
+
+        elif item.isdigit():
+
+            stacks[-1].append(int(item))
+
+        print(stacks)
+
+            
+            
+
+        
     
-    explode = None
-    for i, thing in enumerate(sequence):
-
-        if type(thing) != int:
-            explode, last_int = parse(thing, d+1, last_int)
-
-            if explode:
-                if not last_int:
-                    print("no last int")
-                else:
-                    print("last int", last_int)
-                
-        else:
-            if thing >= 10:
-                sequence[i] = split(thing)
-                
-            last_int = thing
-            print(d*"\t","Found", thing)
-
-            if explode:
-                print("next int", last_int)
-
-    return None, last_int
 
 def solve(data):
 
@@ -119,7 +113,7 @@ def solve(data):
 if __name__ == "__main__":
     
     
-    seq = [[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]
+    seq = "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]"
     print("Parsing", seq)
     parse(seq)
     
