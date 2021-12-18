@@ -2,6 +2,7 @@ from re import search, match, findall
 from collections import Counter
 from helpers import PuzzleHelper
 from math import ceil
+from json import loads
 
 PP_ARGS = False, False #rotate, cast int
 
@@ -62,37 +63,44 @@ def split(thing):
     number divided by two and rounded up'''
     return [thing//2, ceil(thing/2)]
 
-def reduce(sequence):
-    stacks = []
-    stack_pointer = -1
-    for item in sequence:
+def reduce(sequence, depth=0):
 
-        if item == "[":
+    print("Reducing", sequence, "depth", depth)
 
-            stacks.append([])
-            stack_pointer += 1
+    if depth == 3:
 
-        elif item == "]":
+        left, right = sequence
+        print("Explode", sequence)
+        depth -= 1
+        return 0, left, right
+    
+    index = 0
+    while index < len(sequence):
+        thing = sequence[index]
 
-            stack_pointer -= 1
+        if type(thing) == list:
+            sequence[index], left, right = reduce(thing, depth+1)
 
-        elif item.isdigit():
+            print(f"left is {left}, right is {right}")
+            print("Sequence is", sequence)
+            print("Index is", index)
 
-            stacks[stack_pointer].append(int(item))
+            if type(sequence[index-1]) == int:
+                sequence[index-1] += left
+            if type(sequence[index+1]) == int:
+                sequence[index+1] += right
+            print("Sequence amended", sequence)
+        else:
 
-
-        check_stack = stacks[stack_pointer]
-        print("check stack is", check_stack)
-
-        if stack_pointer == 3 and len(check_stack) >= 2:
-            right = check_stack.pop(-1)
-            left = check_stack.pop(-1)
-            print(f"need to explode {left}, {right}")
-
-        print(stacks)
-        
             
+            
+            if thing >= 10:
 
+                print("Split", thing)
+                sequence[index] = split(thing)
+        index += 1
+                
+            
         
     ## check explode
 
@@ -142,6 +150,8 @@ def solve(data):
 
             new_line = add(add_q)
 
+            new_line = loads(new_line)
+
             new_line = reduce(new_line)
 
             add_q = []
@@ -169,3 +179,4 @@ if __name__ == "__main__":
         puzzle_input = p.load_puzzle()
         puzzle_input = p.pre_process(puzzle_input, *PP_ARGS)
         print("FINAL ANSWER: ", solve(puzzle_input))
+
