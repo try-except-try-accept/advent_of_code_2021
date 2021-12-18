@@ -81,15 +81,20 @@ def reduce(sequence, depth=0):
         if type(thing) == list:
             sequence[index], left, right = reduce(thing, depth+1)
 
-            print(f"left is {left}, right is {right}")
-            print("Sequence is", sequence)
-            print("Index is", index)
+            if left is not None:
+                print(f"left is {left}, right is {right}")
+                print("Sequence is", sequence)
+                print("Index is", index)
+                print("found int on right", sequence[index+1])
 
-            if type(sequence[index-1]) == int:
-                sequence[index-1] += left
-            if type(sequence[index+1]) == int:
+                if index > 0:
+                    sequence[index-1] = left
+
                 sequence[index+1] += right
-            print("Sequence amended", sequence)
+                print("Sequence amended", sequence)
+            
+            
+            
         else:
 
             
@@ -99,6 +104,8 @@ def reduce(sequence, depth=0):
                 print("Split", thing)
                 sequence[index] = split(thing)
         index += 1
+
+    return sequence, None, None
                 
             
         
@@ -153,6 +160,8 @@ def solve(data):
             new_line = loads(new_line)
 
             new_line = reduce(new_line)
+
+            print(new_line[0])
 
             add_q = []
     
