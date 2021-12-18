@@ -1,6 +1,7 @@
 from re import search, match, findall
 from collections import Counter
 from helpers import PuzzleHelper
+from math import ceil
 
 PP_ARGS = False, False #rotate, cast int
 
@@ -54,6 +55,13 @@ def explode(sequence, i):
 
     print("new sequence is", sequence)
 
+def split(thing):
+    '''To split a regular number, replace it with a pair; the left
+    element of the pair should be the regular number divided by two and
+    rounded down, while the right element of the pair should be the regular
+    number divided by two and rounded up'''
+    return [thing//2, ceil(thing/2)]
+
 def parse(sequence, d=0, last_int=None):
 
     if d == 4:
@@ -74,6 +82,9 @@ def parse(sequence, d=0, last_int=None):
                     print("last int", last_int)
                 
         else:
+            if thing >= 10:
+                sequence[i] = split(thing)
+                
             last_int = thing
             print(d*"\t","Found", thing)
 
