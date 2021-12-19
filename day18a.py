@@ -261,47 +261,78 @@ def parse(sequence):
 
     sequence = sequence.replace(" ", "")
 
+    
     stack = []
     sp = -1
     restart = True
     first_pass = False
 
     print("Sequence is", sequence)
-    while restart:
+
+    h_pointers = []
+    print("First pass")
+    for item in sequence:
+
+        if item == "[":
+            stack.append([None, None])
+            h_pointers.append(0)
+            sp += 1
+
+        elif item == "]":
+            sp -= 1
+
+        elif item == ",":
+            h_pointers[sp] = 1
+
+        else:
+
+            stack[sp][h_pointers[sp]] = int(item)
+
+    print(stack)
+    input()
     
-        restart = False
-        
-        for item in sequence:
-            print(f"processing {item}, sp is {sp}")
-     
-            if item == "[":
-                stack.append([])
-                sp += 1
-
-            elif item == "]":
-                sp -= 1
-
-            else:
-                if item.isdigit():
-                    stack[sp].append(int(item))
-
-##                if sp == 4:
-##
-##                    if len(stack[sp]) == 2:
-##
-##                        left, right = stack.pop(-1)
-##
-##                        
-##                        print("popped")
-##
-##                        sp -= 1
-
-        print(stack)
-
                         
+    if len(stack) >= 4:
+        sp = 4
 
+        explode = stack.pop(sp)
+
+        print("Explode", explode)
+
+            
+        sp -= 1
+
+        while sp >= 0:
+
+            print("Check layer", stack[sp])
+
+            if stack[sp][0] is not None:
+           
+                if explode[0] is not None:
+                    print("Found left")
+                    stack[sp][0] += explode[0]
+                    stack[sp][1] = 0
+                    explode[0] = None
+
+            if stack[sp][1] is not None:
+                
+                if explode[1] is not None:
+                    print("Found right")
+                    stack[sp][1] += explode[1]
+                    stack[sp][0] = 0
+                    explode[1] = None
+
+            sp -= 1
+
+    print("Second pass")
+
+    print(stack)
+
+    input()
+
+            
     
-        input()
+        
                 
                 
             
