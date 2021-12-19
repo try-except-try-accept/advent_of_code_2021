@@ -216,7 +216,7 @@ def add(lines):
     
     return final
 
-def solve(data):
+def solve2(data):
 
     #To explode a pair, the pair's left value is added to the first
     # regular number to the left of the exploding pair (if any), and
@@ -249,11 +249,73 @@ def solve(data):
     return count
 
 
+def solve(data):
+
+
+    for sequence in data:
+
+
+        parse(sequence)
+
+def parse(sequence):
+
+    sequence = sequence.replace(" ", "")
+
+    stack = []
+    sp = -1
+    restart = True
+    first_pass = False
+
+    print("Sequence is", sequence)
+    while restart:
+    
+        restart = False
+        
+        for item in sequence:
+            print(f"processing {item}, sp is {sp}")
+     
+            if item == "[":
+                stack.append([])
+                sp += 1
+
+            elif item == "]":
+                sp -= 1
+
+            else:
+                if item.isdigit():
+                    stack[sp].append(int(item))
+
+##                if sp == 4:
+##
+##                    if len(stack[sp]) == 2:
+##
+##                        left, right = stack.pop(-1)
+##
+##                        
+##                        print("popped")
+##
+##                        sp -= 1
+
+        print(stack)
+
+                        
+
+    
+        input()
+                
+                
+            
+
+            
+
 
 
 if __name__ == "__main__":
-    data = ["[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"]
-    print(explode("[0, [6, 7]]"))
+    data = """[[[[[9,8],1],2],3],4]
+[7,[6,[5,[4,[3,2]]]]]
+[[6,[5,[4,[3,2]]]],1]
+[[[[4,3],4],4],[7,[[8,4],9]]], [1,1]""".split("\n")
+    
     
     solve(data)
     
