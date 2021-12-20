@@ -41,10 +41,12 @@ def get_square_bin(img, y, x):
 
 def solve(data):
     enhancement = ""
+
+    ENHANCEMENTS = 2
     
     DARK = '.'
     LIGHT = "#"
-    BUFFER_SIZE = len(data[6]) * 50
+    BUFFER_SIZE = len(data[6])
     SMALL_BUFFER = list((BUFFER_SIZE//2) * DARK)
     BIG_BUFFER = list((int(BUFFER_SIZE * 2)) * DARK)
     input_img = [list(BIG_BUFFER) for j in range(10)]
@@ -65,10 +67,7 @@ def solve(data):
     
     output_img = deepcopy(input_img)
     print("Testing input img")
-    for row in input_img:
-        print("".join(row))
-    input()
-    
+
 
     output_img_v2 = deepcopy(output_img)
     count = 0
@@ -76,7 +75,7 @@ def solve(data):
     min_y = None
     min_x = None
 
-    for enhance in range(50):
+    for enhance in range(ENHANCEMENTS):
         for y, row in enumerate(input_img):
             for x, pixel in enumerate(row):
                 if pixel == "#" and not min_y:
@@ -99,7 +98,8 @@ def solve(data):
              
         input_img = deepcopy(output_img)
         output_img = output_img_v2
-
+    ## take away the dodgy border
+        
     return count
 
 
