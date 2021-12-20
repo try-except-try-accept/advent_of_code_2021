@@ -20,191 +20,85 @@ TESTS = """[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
 [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
 [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]///4140"""
 
+
+
+def explode(pair, d=0, left=None, right=None, explode_pair=None):
+
+     print("parsing", pair)
+
+     if d==4:
+          print("EXPLODE", pair)
+          return left, right, pair
+
+     for i, thing in enumerate(pair):
+          if type(thing) == list:
+               if not explode_pair:
+                    left, right, explode_pair = explode(thing, d+1, left, right)               
+          else:
+               
+               if i == 0:
+                    print("left is", pair)
+                    left = pair
+               elif not right or not explode_pair:
+                    print("Right is", pair)
+                    right = pair
+                    
+
+     return left, right, explode_pair
+
+
+def process_explode(sequence):
+
+
+
+     left_int, right_int, explode_pair = explode(sequence)
+     print("Explode was", explode_pair)
+     print("left was", left_int)
+     print("Right was", right_int)
+
+     if explode_pair:
+          if left_int:
+               left_int[0] += explode_pair[0]
+
+          ## hacky fix to deal with wrong right int
+          
+##          if len(findall("\d{1,2}", left_int) > 3:
+##               #left was [7, [[8, 4], 9]  ... the 9 is the right int
+          if right_int:
+               right_int[1] += explode_pair[1]
+
+          sequence = dumps(sequence)
+          sequence = sequence.replace(dumps(explode_pair), "0", 1)
+
+     
+
+          return loads(sequence)
+
+     return sequence
+     
+
+def split(sequence):
+
+     sequence = dumps(sequence)
+     try:
+          big_num = search("\d\d", sequence).group()
+          print("Big num", big_num)
+          i = int(big_num)
+          replace_pair = f"[{i//2}, {ceil(i/2)}]"
+          sequence = sub(big_num, replace_pair, sequence, count=1)
+          return loads(sequence)
+     except Exception as e:
+          print(e)
+          return loads(sequence)
+
+     
+
+     
+     
+     
+
 DEBUG = True
 
-def check_depth(pair):
-    try:
-        for i in range(4):
-            pair = pair[0]
-        return True
-    except:
-        return False
-        
-def get_first_reg_left(sequence, i):
-
-    while i >= 0:
-        if type(sequence[i]) == int:
-            return sequence[i]
-        i -= 1
-    return 0
-
-def get_first_reg_right(sequence, i):
-
-    while i < len(sequence):
-        if type(sequence[i]) == int:
-            return sequence[i]
-        i += 1
-    return 0
-
-def explode(sequence, i):
-
-    pair = sequence[i]
-    left = get_first_reg_left(sequence, i)
-    right = get_first_reg_right(sequence, i)
-    sequence[i] = pair[0] + left, pair[1] + right
-
-
-    print("new sequence is", sequence)
-
-def split(thing):
-    '''To split a regular number, replace it with a pair; the left
-    element of the pair should be the regular number divided by two and
-    rounded down, while the right element of the pair should be the regular
-    number divided by two and rounded up'''
-    return [thing//2, ceil(thing/2)]
-
-
-def explode(sequence):
-
-    '''
-    [[[3, [4, 2]], 3]  -> [[7, 0], 5]
-    [[3, [[4, 2], 3]]] -> [7, [0, 5]]
-    [3, [4, 2]] -> [7, 0]
-    [[3, 4], 2] -> [0, 6]
-    '''
-    digs = []
-    print(sequence)
-    
-    orig = sequence
-    
-    for c in sequence:
-        if c.isdigit():
-
-            digs.append(int(c))
-
-    sequence = sub("\[\d\,\s\d\]", "0", sequence)
-
-    print(sequence)
-
-    if len(digs) == 4:
-        
-    
-        sequence = sub("\d", str(sum(digs[:2])), sequence, count=1)
-    
-        sequence = sub("\,\s[1-9]",  ", "+str(sum(digs[-2:])), sequence, count=1)
-    
-
-    else:
-
-        one, two = sequence.split(", ")
-
-        
-        
-        
-        if orig[1] != "[":
-            one = sub("\d", str(sum(digs[:2])), one, count=1)
-        else:
-            two = sub("\d", str(sum(digs[-2:])), two, count=1)
-
-        sequence = ", ".join([one, two])
-            
-        
-    
-    return sequence
-        
-
-        
-
-    
-
-            
-
-
-
-def reduce(sequence, master=None, depth=1, prev_int=None):
-    print(depth, "Reducing", sequence)
-
-    if master is None:
-        master = deepcopy(sequence)
-
-    for i, thing in enumerate(sequence):
-
-        if type(thing) is list:
-
-            if depth == 3:
-                print("Explode", thing)
-
-                j = i
-                if prev_int:
-                    sequence = [prev_int, sequence]
-
-                print("Before", sequence)
-
-                orig = dumps(sequence)
-                sequence = dumps(sequence)
-
-                
-
-                sequence = explode(sequence)
-
-                
-
-                print("Amended", sequence)
-
-                master_dump = dumps(master)              
-                
-                master_dump = master_dump.replace(orig, sequence)
-
-                print("New master", master_dump)
-
-                return reduce(loads(master_dump))
-
-            else:
-                sequence = reduce(thing, master, depth+1, prev_int)
-
-            
-
-        else:
-            prev_int = thing
-            print("Found a prev int", prev_int)
-
-            if thing > 10:
-                print("Split", thing)
-                
-                orig = dumps(sequence)
-                sequence[i] = split(thing)
-
-                print("After split", sequence)
-                input()
-                master_dump = dumps(master)              
-                master_dump = master_dump.replace(orig, dumps(sequence))
-                sequence = reduce(loads(master_dump))
-
-        
-
-    return sequence
-                    
-            
-        
-    ## check explode
-
-    ## if explode:
-
-        ## explode
-
-        ## parse
-
-    ## check split
-
-    ## if split
-
-        ## split
-
-        ## parse
-
-    ## exit
-
-    pass
 
 def add(lines):
 
@@ -216,136 +110,39 @@ def add(lines):
     
     return final
 
-def solve2(data):
-
-    #To explode a pair, the pair's left value is added to the first
-    # regular number to the left of the exploding pair (if any), and
-    #the pair's right value is added to the first regular number to
-    #the right of the exploding pair (if any). Exploding pairs will
-    #always consist of two regular numbers. Then, the entire exploding
-    #pair is replaced with the regular number 0.for row in data:
-
-    add_q = []
-    while len(data) > 0:
-
-        add_q.append(data.pop(0))
-
-        if len(add_q) == 2:
-
-            new_line = add(add_q)
-
-            new_line = loads(new_line)
-
-            new_line = reduce(new_line)
-
-            print(new_line[0])
-
-            add_q = []
-    
-
-    
-    
-
-    return count
-
 
 def solve(data):
 
+    for row in data:
 
-    for sequence in data:
+        row = loads(row)
 
+        action = True
 
-        parse(sequence)
+        while action:
+            print(row)
+            input()
 
-def parse(sequence):
-
-    sequence = sequence.replace(" ", "")
-
-    
-    stack = []
-    sp = -1
-    restart = True
-    first_pass = False
-
-    print("Sequence is", sequence)
-
-    h_pointers = []
-    print("First pass")
-    for item in sequence:
-
-        if item == "[":
-            stack.append([None, None])
-            h_pointers.append(0)
-            sp += 1
-
-        elif item == "]":
-            sp -= 1
-
-        elif item == ",":
-            h_pointers[sp] = 1
-
-        else:
-
-            stack[sp][h_pointers[sp]] = int(item)
-
-    print(stack)
-    input()
-    
-                        
-    if len(stack) >= 4:
-        sp = 4
-
-        explode = stack.pop(sp)
-
-        print("Explode", explode)
-
+            exploded_row = process_explode(row)
+            if exploded_row != row:
+                 row = exploded_row
+                 print("After explode")
+                 continue
             
-        sp -= 1
-
-        while sp >= 0:
-
-            print("Check layer", stack[sp])
-
-            if stack[sp][0] is not None:
-           
-                if explode[0] is not None:
-                    print("Found left")
-                    stack[sp][0] += explode[0]
-                    stack[sp][1] = 0
-                    explode[0] = None
-
-            if stack[sp][1] is not None:
-                
-                if explode[1] is not None:
-                    print("Found right")
-                    stack[sp][1] += explode[1]
-                    stack[sp][0] = 0
-                    explode[1] = None
-
-            sp -= 1
-
-    print("Second pass")
-
-    print(stack)
-
-    input()
-
+            split_row = split(row)
+            if split_row != row:
+                 print("After split")
+                 row = split_row
+                 continue
             
-    
-        
-                
-                
-            
+            action = False
 
-            
-
+        print("Finalised row:", row)
+        input()
 
 
 if __name__ == "__main__":
-    data = """[[[[[9,8],1],2],3],4]
-[7,[6,[5,[4,[3,2]]]]]
-[[6,[5,[4,[3,2]]]],1]
-[[[[4,3],4],4],[7,[[8,4],9]]], [1,1]""".split("\n")
+    data = """[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]""".split("\n")
     
     
     solve(data)
