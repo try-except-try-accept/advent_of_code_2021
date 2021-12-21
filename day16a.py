@@ -18,7 +18,7 @@ C0015000016115A2E0802F182340///23
 A0016C880162017C3686B18A3D4780///31
 """
 
-DEBUG = True
+DEBUG = False
 
 def pop_bits(bits, amt):
     return [bits.pop(0) for i in range(amt)]
@@ -29,24 +29,24 @@ def get_bits(hexa):
 def get_version(bits):
     version = pop_bits(bits, 3)
     version_num = int("".join(version), 2)
-    print(f"The three bits labeled V ({version}) are the packet version, {version_num}.")
+    p.bugprint(f"The three bits labeled V ({version}) are the packet version, {version_num}.")
     return version_num, bits
 
 def get_type_id(bits):
     type_ = pop_bits(bits, 3)
     type_id = int("".join(type_), 2)
-    print(f"The three bits labeled V ({type_}) are the packet type_id, {type_id}.")
+    p.bugprint(f"The three bits labeled V ({type_}) are the packet type_id, {type_id}.")
     return type_id, bits
 
 def get_length(bits):
     length_type = pop_bits(bits, 1)[0]
     exp_bits = {'0':15, '1':11}[length_type]
     length = int("".join(pop_bits(bits, exp_bits)), 2)
-    print(f"The length type ID is {length_type}")
+    p.bugprint(f"The length type ID is {length_type}")
     if length_type == '0':
-        print(f"the next 15 bits are a number that represents the total length in bits of the sub-packets contained by this packet.")
+        p.bugprint(f"the next 15 bits are a number that represents the total length in bits of the sub-packets contained by this packet.")
     else:
-        print(f"the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet.")
+        p.bugprint(f"the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet.")
     return length, length_type, bits
 
 def get_literal(bits):
@@ -56,10 +56,10 @@ def get_literal(bits):
         chunk = pop_bits(bits, 5)
         literal += chunk[1:]
         end_literal = chunk[0] == "0"
-        print(f"The five bits ({chunk}) start with a {chunk[0]} contain four bits of the number, {chunk[1:]}.")
+        p.bugprint(f"The five bits ({chunk}) start with a {chunk[0]} contain four bits of the number, {chunk[1:]}.")
 
     literal_value = int("".join(literal), 2)
-    print(f"So, this packet represents a literal value with binary representation {literal}, which is {literal_value} in decimal.")
+    p.bugprint(f"So, this packet represents a literal value with binary representation {literal}, which is {literal_value} in decimal.")
     return literal_value, bits
 
 def solve(data):
@@ -69,7 +69,7 @@ def solve(data):
     version_sum = 0
     
     while len(bits):
-        print("Bits left...", "".join(bits))
+        p.bugprint("Bits left...", "".join(bits))
 
         version, bits = get_version(bits)
         version_sum += version
